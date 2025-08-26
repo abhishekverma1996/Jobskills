@@ -4,13 +4,22 @@ const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
 const nodemailer = require("nodemailer");
 const admin = require("firebase-admin");
-const serviceAccount = require("../serviceAccountKey.json");
 
 if (!admin.apps.length) {
+  const base64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+  if (!base64) {
+    throw new Error("Missing FIREBASE_SERVICE_ACCOUNT_BASE64 env variable");
+  }
+
+  const serviceAccount = JSON.parse(
+    Buffer.from(base64, 'base64').toString('utf-8')
+  );
+
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
   });
 }
+
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 // 🔹 Signup
 exports.signup = async (req, res) => {
