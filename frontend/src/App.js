@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import ProfileSetup from "./pages/ProfileSetup";
-import Dashboard from "./pages/Dashboard"; [darkMode]);
+import Dashboard from "./pages/Dashboard";
   return (
     <Router>
       <div className="min-h-screen bg-white dark:bg-gray-900 dark:text-white transition-colors">
