@@ -87,6 +87,8 @@ export default function AuthPage() {
       const googleUser = result.user;
       const idToken = await googleUser.getIdToken();
 
+      // <-- Add this log to verify token being sent
+    console.log("🔑 Sending Google ID token to backend:", idToken);
       const { data } = await axios.post(`${API_URL}/api/auth/google-login`, { idToken: idToken });
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
