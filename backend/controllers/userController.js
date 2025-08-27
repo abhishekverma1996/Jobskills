@@ -117,75 +117,8 @@ function extractPersonalInfo(text) {
     }
   }
 
-  // Extract location (city, state, country)
-  const locationPatterns = [
-    /(?:lives? in|located in|address|from|based in|residing in)[:\s]*([^.\n]+)/gi,
-    /(?:city|state|country)[:\s]*([^.\n]+)/gi,
-    /([A-Z][a-z]+(?:[\s,]+[A-Z][a-z]+)*),\s*([A-Z]{2})\s*([0-9]{5})/g, // US format
-    /([A-Z][a-z]+(?:[\s,]+[A-Z][a-z]+)*),\s*([A-Z][a-z]+)/g // General format
-  ];
-  
-  let location = "";
-  for (const pattern of locationPatterns) {
-    const match = normalizedText.match(pattern);
-    if (match) {
-      location = match[1]?.trim() || match[0]?.trim();
-      break;
-    }
-  }
-
-  // Extract experience level
-  let experience = "";
-  const experiencePatterns = [
-    /(\d+)\s*(?:years?|yrs?)\s*(?:of\s*)?experience/gi,
-    /experience[:\s]*(\d+)\s*(?:years?|yrs?)/gi,
-    /(\d+)\s*(?:years?|yrs?)\s*(?:in\s*)?(?:software|development|engineering)/gi
-  ];
-  
-  for (const pattern of experiencePatterns) {
-    const match = normalizedText.match(pattern);
-    if (match) {
-      const years = parseInt(match[1]);
-      if (years <= 1) experience = "Fresher";
-      else if (years <= 3) experience = "Junior";
-      else if (years <= 5) experience = "Mid-level";
-      else if (years <= 8) experience = "Senior";
-      else experience = "Expert";
-      break;
-    }
-  }
-
-  // Extract education level
-  let education = "";
-  const educationKeywords = {
-    "phd": "PhD",
-    "doctorate": "PhD",
-    "master": "Master's",
-    "mba": "Master's",
-    "ms ": "Master's",
-    "m.s": "Master's",
-    "bachelor": "Bachelor's",
-    "b.tech": "Bachelor's",
-    "b.e": "Bachelor's",
-    "b.sc": "Bachelor's",
-    "diploma": "Diploma",
-    "high school": "High School",
-    "12th": "High School",
-    "10th": "High School"
-  };
-  
-  for (const [keyword, level] of Object.entries(educationKeywords)) {
-    if (normalizedText.includes(keyword)) {
-      education = level;
-      break;
-    }
-  }
-
   return {
-    phone: phone || "",
-    location: location || "",
-    experience: experience || "",
-    education: education || ""
+    phone: phone || ""
   };
 }
 
@@ -230,10 +163,7 @@ exports.uploadResume = async (req, res) => {
       { 
         skills, 
         resumeUrl: req.file.originalname,
-        phone: personalInfo.phone || currentUser?.phone || "",
-        location: personalInfo.location || currentUser?.location || "",
-        experience: personalInfo.experience || currentUser?.experience || "",
-        education: personalInfo.education || currentUser?.education || ""
+        phone: personalInfo.phone || currentUser?.phone || ""
       },
       { new: true }
     );
