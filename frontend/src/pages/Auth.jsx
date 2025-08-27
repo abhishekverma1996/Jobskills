@@ -79,27 +79,38 @@ export default function AuthPage() {
     }
   };
 
-  // Google Login
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      const result = await signInWithPopup(auth, provider);
-      const googleUser = result.user;
-      const idToken = await googleUser.getIdToken();
+ const handleGoogleSignIn = async () => {
+  setLoading(true);
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const googleUser = result.user;
+    const idToken = await googleUser.getIdToken();
 
-      // <-- Add this log to verify token being sent
     console.log("🔑 Sending Google ID token to backend:", idToken);
-      const { data } = await axios.post(`${API_URL}/api/auth/google-login`, { idToken: idToken });
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "/dashboard";
-    } catch (error) {
-      console.error("Google Sign-In Error:", error);
+    const { data } = await axios.post(`${API_URL}/api/auth/google-login`, { idToken: idToken });
+
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    window.location.href = "/dashboard";
+
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
+
+    // Custom message handling:
+    if (
+      error.response &&
+      error.response.data &&
+      error.response.data.message === "This email is already registered with local login. Please use email/password."
+    ) {
+      alert("Your email is registered with normal signup. Please sign in using email and password.");
+    } else {
       alert("Google Sign-in failed");
-    } finally {
-      setLoading(false);
     }
-  };
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 px-4">
