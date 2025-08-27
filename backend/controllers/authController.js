@@ -191,73 +191,16 @@ exports.login = async (req, res) => {
 };
 
 // 🔹 Google Login
-// exports.googleLogin = async (req, res) => {
-//   try {
-//     const { idToken } = req.body;
-//     const decodedToken = await admin.auth().verifyIdToken(idToken);
-//     const { email, name, picture } = decodedToken;
-
-//     let user = await User.findOne({ email });
-
-//     if (!user) {
-//       // Create new user
-//       user = await User.create({
-//         name,
-//         email,
-//         isVerified: true,
-//         provider: "google",
-//         profilePicture: picture,
-//       });
-//     } else if (user.provider !== "google") {
-//       return res.status(400).json({
-//         message: "This email is already registered with local login. Please use email/password."
-//       });
-//     }
-
-//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-//       expiresIn: "7d",
-//     });
-
-//     res.json({
-//       message: "Google login successful",
-//       token,
-//       user: {
-//         _id: user._id,
-//         name: user.name,
-//         email: user.email,
-//         skills: user.skills,
-//         resumeUrl: user.resumeUrl,
-//         phone: user.phone,
-//         applyLogs: user.applyLogs,
-//         lastSentJobs: user.lastSentJobs,
-//         settings: user.settings,
-//       },
-//     });
-//   } catch (err) {
-//     res.status(500).json({ message: "Server error", error: err.message });
-//   }
-// };
-
 exports.googleLogin = async (req, res) => {
   try {
     const { idToken } = req.body;
-
-    if (!idToken) {
-      return res.status(400).json({ message: "Missing ID token" });
-    }
-
     const decodedToken = await admin.auth().verifyIdToken(idToken);
-    console.log("✅ Google token verified:", decodedToken);
-
     const { email, name, picture } = decodedToken;
-
-    if (!email || !name) {
-      return res.status(400).json({ message: "Missing required fields from Google token" });
-    }
 
     let user = await User.findOne({ email });
 
     if (!user) {
+      // Create new user
       user = await User.create({
         name,
         email,
@@ -266,9 +209,8 @@ exports.googleLogin = async (req, res) => {
         profilePicture: picture,
       });
     } else if (user.provider !== "google") {
-      console.warn("⚠️ Email already registered with local login:", email);
       return res.status(400).json({
-        message: "This email is already registered with local login. Please use email/password.",
+        message: "This email is already registered with local login. Please use email/password."
       });
     }
 
@@ -276,7 +218,7 @@ exports.googleLogin = async (req, res) => {
       expiresIn: "7d",
     });
 
-    return res.json({
+    res.json({
       message: "Google login successful",
       token,
       user: {
@@ -292,8 +234,6 @@ exports.googleLogin = async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("❌ Google login failed:", err);
-    return res.status(500).json({ message: "Google login failed", error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
