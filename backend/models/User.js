@@ -6,9 +6,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: false }, // Google login ke liye optional
   provider: { type: String, default: "local" },
   phone: { type: String, default: "" },
-  location: { type: String, default: "" },
-  experience: { type: String, default: "" },
-  education: { type: String, default: "" },
   skills: { type: [String], default: [] },
   resumeUrl: { type: String, default: "" },
   isVerified: { type: Boolean, default: false },
